@@ -18,6 +18,3 @@ dim = (width, height)
 
 # resize image
 resized = cv2.resize(image, dim, interpolation = cv2.INTER_LINEAR)
-
-img_array = np.array(image)
-st.image(img_array,caption = 'サムネイル画像',use_column_width = True) 
