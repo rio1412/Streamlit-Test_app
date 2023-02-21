@@ -15,7 +15,7 @@ from urllib.request import urlopen
 import ipaddress
 from ipaddress import ip_address
 
-st.set_page_config(page_title="main", page_icon='1.png')
+st.set_page_config(page_title="main", page_icon='1.jpg')
 st.title("Multiple OSS Access Log Analyzer")
 
 
