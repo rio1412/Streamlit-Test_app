@@ -13,5 +13,5 @@ if uploaded_file is not None:
     st.markdown('### アクセスログ（先頭5件）')
     st.write(df.head(5))
 
-    st.set_page_config(page_title="メインページ", page_icon='1.png')
-    st.title("Multiple OSS Access Log Analyzer")
+st.set_page_config(page_title="メインページ", page_icon='1.png')
+st.title("Multiple OSS Access Log Analyzer")
