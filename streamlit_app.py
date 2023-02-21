@@ -1,5 +1,6 @@
-import streamlit as st
-uploaded_file = st.file_uploader("ファイルをアップロードしてください。")
+from PIL import Image
+import io 
+uploaded_file = st.file_uploader('Choose a image file')
 
 import pandas as pd
 if uploaded_file is not None:
