@@ -1,4 +1,8 @@
 from PIL import Image
+
+import streamlit as st
+uploaded_file = st.file_uploader("アクセスログをアップロードしてください。")
+
 import io 
 uploaded_file = st.file_uploader('Choose a image file')
 
