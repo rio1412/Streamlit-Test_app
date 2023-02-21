@@ -10,7 +10,7 @@ img_array = np.array(img)
 st.image(img_array,caption = 'サムネイル画像',use_column_width = True)
 
 
-img = cv2.imread("icon.png")
+image = cv2.imread("icon.png")
 
 #画像の解像度を上げる
 scale_percent = 200 # 200%
