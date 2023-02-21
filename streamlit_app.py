@@ -1,15 +1,8 @@
 import streamlit as st
-uploaded_file = st.file_uploader("アクセスログをアップロードしてください。")
+from PIL import Image
+import numpy as np
 
-import pandas as pd
-if uploaded_file is not None:
-    df = pd.read_csv(
-        uploaded_file,
-        sep=r'\s(?=(?:[^"]*"[^"]*")*[^"]*$)(?![^\[]*\])',
-        engine='python',
-        na_values='-',
-        header=None)
-
-    st.markdown('### アクセスログ（先頭5件）')
-    st.write(df.head(5))    
-
+uploaded_file=st.file_uploader("ファイルアップロード", type='png')
+image=Image.open(uploaded_file)
+img_array = np.array(image)
+st.image(img_array,caption = 'サムネイル画像',use_column_width = True) 
