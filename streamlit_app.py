@@ -9,8 +9,8 @@ img = cv2.imread(uploaded_file)
 
 #画像の解像度を上げる
 scale_percent = 200 # 200%
-width = int(img.shape[1] * scale_percent / 100)
-height = int(img.shape[0] * scale_percent / 100)
+width = int(image.shape[1] * scale_percent / 100)
+height = int(image.shape[0] * scale_percent / 100)
 dim = (width, height)
 
 # resize image
