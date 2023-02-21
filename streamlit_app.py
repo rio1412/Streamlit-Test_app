@@ -12,7 +12,7 @@ img_array = np.array(img)
 st.image(img_array,caption = 'サムネイル画像',use_column_width = True)
 
 #画像の読み込み
-img = cv2.imread(img)
+img = cv2.imread(uploaded_file)
 
 #画像の解像度を上げる
 scale_percent = 200 # 200%
