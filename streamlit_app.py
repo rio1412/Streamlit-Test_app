@@ -5,10 +5,7 @@ from PIL import Image
 import numpy as np
 
 uploaded_file=st.file_uploader("ファイルアップロード", type='png')
-image=Image.open(uploaded_file)
-
-#画像の読み込み
-img = cv2.imread(image)
+img=Image.open(uploaded_file)
 
 #画像の解像度を上げる
 scale_percent = 200 # 200%
@@ -17,4 +14,4 @@ height = int(img.shape[0] * scale_percent / 100)
 dim = (width, height)
 
 # resize image
-resized = cv2.resize(image, dim, interpolation = cv2.INTER_LINEAR)
+resized = cv2.resize(img, dim, interpolation = cv2.INTER_LINEAR)
