@@ -5,11 +5,12 @@ import numpy as np
 import cv2
 
 uploaded_file=st.file_uploader("ファイルアップロード", type='png')
-img = cv2.imread(uploaded_file)
-
 img=Image.open(uploaded_file)
 img_array = np.array(img)
 st.image(img_array,caption = 'サムネイル画像',use_column_width = True)
+
+
+img = cv2.imread(uploaded_file)
 
 #画像の解像度を上げる
 scale_percent = 200 # 200%
