@@ -7,6 +7,10 @@ import cv2
 uploaded_file=st.file_uploader("ファイルアップロード", type='png')
 img=Image.open(uploaded_file)
 
+
+img_array = np.array(img)
+st.image(img_array,caption = 'サムネイル画像',use_column_width = True)
+
 #画像の解像度を上げる
 scale_percent = 200 # 200%
 width = int(img.shape[1] * scale_percent / 100)
