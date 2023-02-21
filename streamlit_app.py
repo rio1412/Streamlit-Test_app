@@ -1,5 +1,5 @@
 import streamlit as st
-
+import pandas as pd
 
 uploaded_file = st.file_uploader("アクセスログをアップロードしてください。")
 if uploaded_file is not None:
