@@ -24,6 +24,3 @@ resized = cv2.resize(image, dim, interpolation = cv2.INTER_LINEAR)
 
 img_array1 = np.array(resized)
 st.image(img_array1,caption = 'サムネイル画像',use_column_width = True)
-
-#画像の保存
-cv2.imwrite("output3.jpg", resized)
