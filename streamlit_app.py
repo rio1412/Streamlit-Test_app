@@ -12,6 +12,7 @@ uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
     # ここに高画質化処理のコードを記述します
 def build_srgan():
     """Builds the SRGAN model."""
+    weight_path = f'./weights/{exp}_netG_epoch_{epoch}.pth'
     srgan = load_model("srgan.h5.py")
     return srgan
 
