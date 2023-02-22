@@ -6,11 +6,11 @@ from tensorflow.keras.applications.vgg19 import preprocess_input
 from tensorflow.keras.models import load_model
 from PIL import Image
 
-# モデルを読み込む
-model = tf.keras.models.load_model('RCAN_TrainCode/experiment/model/Network_RCAN_BIX2_G10R20P48-2018-07-15-20-14-55.txt')
 
 # 画像を高画質化する関数を定義する
 def enhance_image(image):
+    # モデルを読み込む
+　　model = tf.keras.models.load_model('srgan.h5')
     # 画像を読み込む
     img = Image.open(image).convert('RGB')
     # 画像をリサイズする
