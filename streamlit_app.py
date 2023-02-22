@@ -1,6 +1,9 @@
 import streamlit as st
 import cv2
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.applications.vgg19 import preprocess_input
+from tensorflow.keras.models import load_model
 
 st.title('High-Quality Image Super-Resolution')
 
@@ -11,9 +14,6 @@ if uploaded_file is not None:
     st.image(image, caption='Original Image', use_column_width=True)
     
     # ここに高画質化処理のコードを記述します
-import tensorflow as tf
-from tensorflow.keras.applications.vgg19 import preprocess_input
-from tensorflow.keras.models import load_model
 
 def build_srgan():
     """Builds the SRGAN model."""
@@ -39,7 +39,3 @@ if uploaded_file is not None:
     
     high_res_image = upscale_image(image)
     st.image(high_res_image, caption='High-Quality Image', use_column_width=True)
-
-    
-    st.image(high_res_image, caption='High-Quality Image', use_column_width=True)
-
