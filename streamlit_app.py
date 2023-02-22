@@ -30,10 +30,10 @@ import os
 import shutil
 from PIL import Image
 
-pic ='images.jpg'#@param {type:"string"} 
+pic ='icon.png'#@param {type:"string"} 
 input_folder = 'inputs/whole_imgs_original'
 reset_folder(input_folder)
-im = icon.open('/content/drive/MyDrive/pic/'+pic)
+im = image.open('/content/drive/MyDrive/pic/'+pic)
 im.save(input_folder+'/'+os.path.splitext(pic)[0]+'.png')
 
 w = 0.6 #@param {type:"slider", min:0.1, max:0.9, step:0.1}
