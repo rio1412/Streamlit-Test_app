@@ -41,7 +41,7 @@ def build_discriminator():
     # ここに高画質化処理のコードを記述します
 def build_srgan():
     """Builds the SRGAN model."""
-    srgan = load_model(conv8)
+    srgan = load_model()
     return srgan
 
 def upscale_image(image):
