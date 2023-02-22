@@ -13,7 +13,7 @@ uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
 
 def build_srgan():
     """Builds the SRGAN model."""
-    srgan = load_model('https://github.com/rio1412/Streamlit-Test_app/blob/main/srgan.h5.py')
+    srgan = load_model('Streamlit-Test_app/blob/main/srgan.h5.py')
     return srgan
 
 def upscale_image(image):
