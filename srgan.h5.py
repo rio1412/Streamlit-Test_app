@@ -1,3 +1,8 @@
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.layers import *
+from tensorflow.keras.models import *
+
 def build_generator():
     input_shape = (96, 96, 3)
     inputs = Input(input_shape)
