@@ -12,7 +12,7 @@ uploaded_file = st.file_uploader('Upload an image', type=['jpg', 'jpeg', 'png'])
     # ここに高画質化処理のコードを記述します
 def build_srgan():
     """Builds the SRGAN model."""
-    srgan = load_model()
+    srgan = load_model("srgan.h5.py")
     return srgan
 
 def upscale_image(image):
