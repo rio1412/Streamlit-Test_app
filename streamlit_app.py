@@ -11,10 +11,7 @@ if uploaded_file is not None:
     st.image(image, caption='Original Image', use_column_width=True)
     
     # ここに高画質化処理のコードを記述します
-    
-    st.image(high_res_image, caption='High-Quality Image', use_column_width=True)
-
-import tensorflow as tf
+    import tensorflow as tf
 from tensorflow.keras.applications.vgg19 import preprocess_input
 from tensorflow.keras.models import load_model
 
@@ -42,3 +39,7 @@ if uploaded_file is not None:
     
     high_res_image = upscale_image(image)
     st.image(high_res_image, caption='High-Quality Image', use_column_width=True)
+
+    
+    st.image(high_res_image, caption='High-Quality Image', use_column_width=True)
+
