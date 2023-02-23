@@ -18,6 +18,7 @@ def upscale_image(image):
     output = tf.image.convert_image_dtype(output, dtype=tf.uint8)
     output = np.array(output)
     output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+    cv2.imwrite("output.png", output)  # 画像を保存する
     return output
 
 def main():
