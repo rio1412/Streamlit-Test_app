@@ -3,13 +3,22 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
 import cv2
-import tempfile
+
+st.set_option('deprecation.showfileUploaderEncoding', False)
+
+st.title("Image Enhancement")
+
+st.sidebar.title("Settings")
+uploaded_file = st.sidebar.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+
+contrast_value = st.sidebar.slider("Contrast Adjustment", 0.0, 2.0, 1.0, 0.1)
 
 hub_url = 'https://tfhub.dev/captain-pool/esrgan-tf2/1'
 sr_model = hub.load(hub_url)
 
-def upscale_image(image):
-    img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+def upscale_image(image_path):
+    img = cv2.imread(image_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = tf.image.convert_image_dtype(img, tf.float32)
     img = tf.expand_dims(img, axis=0)
     output = sr_model(img)[0]
@@ -18,30 +27,25 @@ def upscale_image(image):
     output = tf.image.convert_image_dtype(output, dtype=tf.uint8)
     output = np.array(output)
     output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
-    cv2.imwrite("output.png", output)  # 画像を保存する
     return output
 
+def adjust_contrast(image, contrast):
+    brightness = 0
+    img = tf.image.adjust_contrast(image, contrast)
+    img = tf.image.adjust_brightness(img, brightness)
+    return img
+
 def main():
-    st.title("Image Super-Resolution App")
-    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
-        img = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
-        st.image(img, caption="Original Image", use_column_width=True)
-
-        if st.button("Enhance Image"):
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                tmp.write(uploaded_file.read())
-                tmp.flush()
-                output_image = upscale_image(img)
-                st.image(output_image, caption="Enhanced Image", use_column_width=True)
-
-            st.write("Download enhanced image")
-            st.download_button(
-                label="Download",
-                data=output_image,
-                file_name="enhanced_image.png",
-                mime="image/png"
-            )
+        with st.spinner('Enhancing Image...'):
+            output_image = upscale_image(uploaded_file)
+            output_image = tf.convert_to_tensor(output_image)
+            output_image = adjust_contrast(output_image, contrast_value)
+            st.image(output_image, use_column_width=True)
+            
+            if st.button("Save Image"):
+                cv2.imwrite("enhanced_image.jpg", cv2.cvtColor(output_image.numpy(), cv2.COLOR_RGB2BGR))
+                st.success("Image saved as enhanced_image.jpg")
 
 if __name__ == "__main__":
     main()
