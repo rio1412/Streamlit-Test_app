@@ -28,14 +28,12 @@ st.title('画像を高画質化するアプリ')
 uploaded_file = st.file_uploader('画像をアップロードしてください', type=['jpg', 'jpeg', 'png'])
 if uploaded_file is not None:
     # アップロードされた画像を表示する
-    st.image(uploaded_file, caption='アップロードされた画像', use_column_width=True)
+    input_image = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
+    st.image(input_image, caption='アップロードされた画像', use_column_width=True)
     # 画像を高画質化するボタンを作成する
     if st.button('画像を高画質化する'):
-        # プログレスバーを表示する
-        progress_bar = st.progress(0)
-        for percent_complete in range(100):
-            progress_bar.progress(percent_complete + 1)
-        # 画像を高画質化する
-        enhanced_image = output_image(uploaded_file)
-        # 画像を表示する
-        st.image(enhanced_image, caption='高画質化された画像', use_column_width=True)
+        with st.spinner('画像を高画質化する...'):
+            # Upscale the image
+            output_image = upscale_image(uploaded_file)
+        # Show the upscaled image
+        st.image(output_image, caption='高画質化された画像', use_column_width=True)
