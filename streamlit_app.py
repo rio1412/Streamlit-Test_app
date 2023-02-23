@@ -1,38 +1,26 @@
 import streamlit as st
-import cv2
-import numpy as np
 import tensorflow as tf
+import tensorflow_hub as hub
 from tensorflow.keras.applications.vgg19 import preprocess_input
 from tensorflow.keras.models import load_model
 from PIL import Image
+import numpy as np
+import cv2
 
-import requests
+hub_url = 'https://tfhub.dev/captain-pool/esrgan-tf2/1'
+sr_model = hub.load(hub_url)
 
-url = 'https://github.com/rio1412/Streamlit-Test_app/blob/31086b3bb02fa3ef972f835cfe6671d514a86525/srgan.h5'
-r = requests.get(url)
-
-with open('srgan.h5', 'wb') as f:
-    f.write(r.content)
-
-# モデルを読み込む
-model = tf.keras.models.load_model('srgan.h5')
-
-# 画像を高画質化する関数を定義する
-def enhance_image(image):
-    # 画像を読み込む
-    img = Image.open(image).convert('RGB')
-    # 画像をリサイズする
-    img = img.resize((256, 256))
-    # 画像をTensorに変換する
-    x = tf.keras.preprocessing.image.img_to_array(img)
-    x = tf.expand_dims(x, axis=0)
-    # 画像を高画質化する
-    enhanced = model.predict(x)
-    # 画像をPIL Imageに変換する
-    enhanced = tf.squeeze(enhanced, axis=0)
-    enhanced = tf.keras.preprocessing.image.array_to_img(enhanced)
-    # 画像を保存する
-    enhanced.save('enhanced_image.jpg')
+def upscale_image(image_path):
+    img = cv2.imread(image_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = tf.image.convert_image_dtype(img, tf.float32)
+    img = tf.expand_dims(img, axis=0)
+    output = sr_model(img)[0]
+    output = tf.squeeze(output)
+    output = tf.clip_by_value(output, 0, 1)
+    output = tf.image.convert_image_dtype(output, dtype=tf.uint8)
+    output = np.array(output)
+    enhanced = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
     return enhanced
 
 # Streamlitのインターフェースを作成する
