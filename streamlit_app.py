@@ -1,18 +1,15 @@
 import streamlit as st
 import tensorflow as tf
 import tensorflow_hub as hub
-from tensorflow.keras.applications.vgg19 import preprocess_input
-from tensorflow.keras.models import load_model
-from PIL import Image
 import numpy as np
 import cv2
+import tempfile
 
 hub_url = 'https://tfhub.dev/captain-pool/esrgan-tf2/1'
 sr_model = hub.load(hub_url)
 
-def upscale_image(image_path):
-    img = cv2.imread(image_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+def upscale_image(image):
+    img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     img = tf.image.convert_image_dtype(img, tf.float32)
     img = tf.expand_dims(img, axis=0)
     output = sr_model(img)[0]
@@ -23,17 +20,27 @@ def upscale_image(image_path):
     output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
     return output
 
-# Streamlitのインターフェースを作成する
-st.title('画像を高画質化するアプリ')
-uploaded_file = st.file_uploader('画像をアップロードしてください', type=['jpg', 'jpeg', 'png'])
-if uploaded_file is not None:
-    # アップロードされた画像を表示する
-    input_image = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
-    st.image(input_image, caption='アップロードされた画像', use_column_width=True)
-    # 画像を高画質化するボタンを作成する
-    if st.button('画像を高画質化する'):
-        with st.spinner('画像を高画質化する...'):
-            # Upscale the image
-            output_image = upscale_image(uploaded_file)
-        # Show the upscaled image
-        st.image(output_image, caption='高画質化された画像', use_column_width=True)
+def main():
+    st.title("Image Super-Resolution App")
+    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        img = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
+        st.image(img, caption="Original Image", use_column_width=True)
+
+        if st.button("Enhance Image"):
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                tmp.write(uploaded_file.read())
+                tmp.flush()
+                output_image = upscale_image(img)
+                st.image(output_image, caption="Enhanced Image", use_column_width=True)
+
+            st.write("Download enhanced image")
+            st.download_button(
+                label="Download",
+                data=output_image,
+                file_name="enhanced_image.png",
+                mime="image/png"
+            )
+
+if __name__ == "__main__":
+    main()
