@@ -6,6 +6,14 @@ from tensorflow.keras.applications.vgg19 import preprocess_input
 from tensorflow.keras.models import load_model
 from PIL import Image
 
+import requests
+
+url = 'https://github.com/ユーザー名/リポジトリ名/ファイルパス'
+r = requests.get(url)
+
+with open('srgan.h5', 'wb') as f:
+    f.write(r.content)
+
 # モデルを読み込む
 model = tf.keras.models.load_model('srgan.h5')
 
