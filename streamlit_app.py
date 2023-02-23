@@ -20,8 +20,8 @@ def upscale_image(image_path):
     output = tf.clip_by_value(output, 0, 1)
     output = tf.image.convert_image_dtype(output, dtype=tf.uint8)
     output = np.array(output)
-    enhanced = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
-    return enhanced
+    output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+    return output
 
 # Streamlitのインターフェースを作成する
 st.title('画像を高画質化するアプリ')
@@ -36,6 +36,6 @@ if uploaded_file is not None:
         for percent_complete in range(100):
             progress_bar.progress(percent_complete + 1)
         # 画像を高画質化する
-        enhanced_image = enhance_image(uploaded_file)
+        output_image = output_image(uploaded_file)
         # 画像を表示する
-        st.image(enhanced_image, caption='高画質化された画像', use_column_width=True)
+        st.image(putput_image, caption='高画質化された画像', use_column_width=True)
