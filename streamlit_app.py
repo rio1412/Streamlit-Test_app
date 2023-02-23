@@ -36,6 +36,6 @@ if uploaded_file is not None:
         for percent_complete in range(100):
             progress_bar.progress(percent_complete + 1)
         # 画像を高画質化する
-        input_image = output_image(uploaded_file)
+        enhanced_image = output_image(uploaded_file)
         # 画像を表示する
-        st.image(input_image, caption='高画質化された画像', use_column_width=True)
+        st.image(enhanced_image, caption='高画質化された画像', use_column_width=True)
