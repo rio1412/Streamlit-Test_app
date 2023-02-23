@@ -8,7 +8,7 @@ from PIL import Image
 
 import requests
 
-url = 'https://github.com/ユーザー名/リポジトリ名/ファイルパス'
+url = 'https://github.com/rio1412/Streamlit-Test_app/blob/31086b3bb02fa3ef972f835cfe6671d514a86525/srgan.h5'
 r = requests.get(url)
 
 with open('srgan.h5', 'wb') as f:
