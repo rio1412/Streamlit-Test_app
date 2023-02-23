@@ -38,4 +38,4 @@ if uploaded_file is not None:
         # 画像を高画質化する
         output_image = output_image(uploaded_file)
         # 画像を表示する
-        st.image(putput_image, caption='高画質化された画像', use_column_width=True)
+        st.image(output_image, caption='高画質化された画像', use_column_width=True)
