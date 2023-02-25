@@ -7,6 +7,8 @@ import cv2
 import tensorflow as tf
 import tensorflow_hub as hub
 
+st.title("ESRGAN: Super-Resolution")
+
 # モデルの読み込み
 hub_url = 'https://tfhub.dev/captain-pool/esrgan-tf2/1'
 sr_model = hub.load(hub_url)
