@@ -83,7 +83,7 @@ if image_file is not None:
     st.image(input_image, caption="Original Image", use_column_width=True)
     hr_image = preprocess_image(input_image)
 
-    if st.button('高画質化'):
+    if st.button('Enhance image'):
         if hr_image is not None:
             # Loading the model
             start = time.time()
