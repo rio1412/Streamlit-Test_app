@@ -1,102 +1,111 @@
 import streamlit as st
-import requests
-import base64
-from io import BytesIO
+import os
+import time
+from PIL import Image
 import numpy as np
-import cv2
 import tensorflow as tf
 import tensorflow_hub as hub
+import matplotlib.pyplot as plt
+os.environ["TFHUB_DOWNLOAD_PROGRESS"] = "True"
 
-st.title("ESRGAN: Super-Resolution")
+# Declaring Constants
+SAVED_MODEL_PATH = "https://tfhub.dev/captain-pool/esrgan-tf2/1"
 
-# モデルの読み込み
-hub_url = 'https://tfhub.dev/captain-pool/esrgan-tf2/1'
-sr_model = hub.load(hub_url)
+def load_model():
+    model = hub.load(SAVED_MODEL_PATH)
+    return model
 
-# 画像のアップロード用ウィジェット
-uploader = st.file_uploader(label='Upload an image')
+model = load_model()
 
-# スライダーの作成
-contrast_slider = st.slider(
-    label='Contrast:',
-    min_value=0.0,
-    max_value=2.0,
-    step=0.01,
-    value=1.0
-)
+def preprocess_image(image):
+  """ Preprocesses the input image to make it model ready
+      Args:
+        image: PIL Image object
+  """
+  hr_image = np.array(image)
+  # If PNG, remove the alpha channel. The model only supports
+  # images with 3 color channels.
+  if hr_image.shape[-1] == 4:
+    hr_image = hr_image[...,:-1]
+  hr_size = (tf.convert_to_tensor(hr_image.shape[:-1]) // 4) * 4
+  hr_image = tf.image.crop_to_bounding_box(hr_image, 0, 0, hr_size[0], hr_size[1])
+  hr_image = tf.cast(hr_image, tf.float32)
+  return tf.expand_dims(hr_image, 0)
 
-hue_slider = st.slider(
-    label='Hue:',
-    min_value=-0.5,
-    max_value=0.5,
-    step=0.01,
-    value=0.0
-)
+def save_image(image, filename):
+    """
+    Saves unscaled Tensor Images.
+    Args:
+        image: 3D image tensor. [height, width, channels]
+        filename: Name of the file to save.
+    """
+    if not isinstance(image, Image.Image):
+        image = tf.clip_by_value(image, 0, 255)
+        image = Image.fromarray(tf.cast(image, tf.uint8).numpy())
+    # Convert the image to an RGB mode if it has an alpha channel
+    if image.mode == 'RGBA':
+        image = image.convert('RGB')
+    image.save("%s.jpg" % filename)
+    print("Saved as %s.jpg" % filename)
 
-brightness_slider = st.slider(
-    label='Brightness:',
-    min_value=-0.5,
-    max_value=0.5,
-    step=0.01,
-    value=0.0
-)
 
-white_balance_slider = st.slider(
-    label='White Balance:',
-    min_value=0.0,
-    max_value=2.0,
-    step=0.01,
-    value=1.0
-)
+def plot_image(image, title=""):
+  """
+    Plots images from image tensors.
+    Args:
+      image: 3D image tensor. [height, width, channels].
+      title: Title to display in the plot.
+  """
+  image = np.asarray(image)
+  image = tf.clip_by_value(image, 0, 255)
+  image = Image.fromarray(tf.cast(image, tf.uint8).numpy())
+  st.image(image, caption=title, use_column_width=True)
 
-# ボタンのクリック時の処理
-def on_button_click():
-    if uploader is None:
-        st.warning('Please select an image to enhance.')
-        return
-    input_image = cv2.imdecode(np.fromstring(uploader.read(), np.uint8), cv2.IMREAD_COLOR)
-    input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+st.set_option('deprecation.showPyplotGlobalUse', False)
+st.title("Super Resolution")
+st.sidebar.title("Settings")
+contrast = st.sidebar.slider('Contrast', min_value=0.0, max_value=2.0, value=1.0, step=0.1)
+st.sidebar.write('Contrast:', contrast)
 
-    # コントラストの調整
-    contrast = contrast_slider
-    output_image = tf.image.adjust_contrast(input_image, contrast)
+brightness = st.sidebar.slider('Brightness', min_value=-0.5, max_value=0.5, value=0.0, step=0.05)
+st.sidebar.write('Brightness:', brightness)
 
-    # 色味の調整
-    hue = hue_slider
-    output_image = tf.image.adjust_hue(output_image, hue)
+gamma = st.sidebar.slider('Gamma', min_value=0.1, max_value=10.0, value=1.0, step=0.1)
+st.sidebar.write('Gamma:', gamma)
 
-    output_image = tf.image.convert_image_dtype(output_image, tf.float32)
-    output_image = tf.expand_dims(output_image, axis=0)
-    output_image = sr_model(output_image)[0]
-    output_image = tf.squeeze(output_image)
-    output_image = tf.clip_by_value(output_image, 0, 1)
-    output_image = tf.image.convert_image_dtype(output_image, dtype=tf.uint8)
-    output_image = np.array(output_image)
-    output_image = cv2.cvtColor(output_image, cv2.COLOR_RGB2BGR)
-    output_image = cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB)
+image_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
-    # 入力画像を表示
-    st.image(input_image, channels='RGB', caption='Input Image')
+if image_file is not None:
+    input_image = Image.open(image_file)
+    st.image(input_image, caption="Original Image", use_column_width=True)
+    hr_image = preprocess_image(input_image)
 
-    # 出力画像を表示
-    st.image(output_image, channels='RGB', caption='Enhanced Image')
+    if st.button('高画質化'):
+        if hr_image is not None:
+            # Loading the model
+            start = time.time()
+            fake_image = model(hr_image)
+            fake_image = tf.squeeze(fake_image)
+            st.write("Time Taken : ", time.time() - start)
 
-    # 画像の保存
-    file_extension = '.jpg'
-    with open('enhanced_image' + file_extension, 'wb') as f:
-        f.write(cv2.imencode(file_extension, output_image)[1])
+            # Displaying the Super Resolution Image
+            st.write("")
+            st.write("## Super Resolution")
+            st.write("")
 
-# ボタンの作成
-if uploader is not None:
-    st.button(label='Enhance image', on_click=on_button_click)
+            # Applying Contrast, Brightness and Gamma Correction
+            fake_image = tf.image.adjust_contrast(fake_image, contrast)
+            fake_image = tf.image.adjust_brightness(fake_image, brightness)
+            fake_image = tf.image.adjust_gamma(fake_image, gamma)
 
-# ウィジェットの表示
-st.write('Adjust the image:')
-st.write('Contrast:')
-st.write(contrast_slider)
-st.write('Hue:')
-st.write(hue_slider)
-st.write('Brightness:')
-st.write(brightness_slider)
-st.write('White_balance:')
-st.write(white_balance_slider)
+
+
+
+            # Displaying the Super Resolution Image with adjusted color and contrast
+            plot_image(tf.squeeze(fake_image), title="Super Resolution with Adjusted Color and Contrast")
+
+            # Saving the Super Resolution Image with adjusted color and contrast
+            save_image(tf.squeeze(fake_image), filename="Super Resolution Adjusted")
+
+else:
+    st.write("Upload an image to get started.")
