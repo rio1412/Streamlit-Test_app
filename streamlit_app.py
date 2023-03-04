@@ -73,6 +73,9 @@ st.sidebar.write('Brightness:', brightness)
 gamma = st.sidebar.slider('Gamma', min_value=0.1, max_value=10.0, value=1.0, step=0.1)
 st.sidebar.write('Gamma:', gamma)
 
+hue = st.sidebar.slider('Hue', min_value=-0.5, max_value=0.5, value=0.0, step=0.05)
+st.sidebar.write('Hue:', hue)
+
 image_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
 if image_file is not None:
@@ -97,6 +100,7 @@ if image_file is not None:
             fake_image = tf.image.adjust_contrast(fake_image, contrast)
             fake_image = tf.image.adjust_brightness(fake_image, brightness)
             fake_image = tf.image.adjust_gamma(fake_image, gamma)
+            fake_image = tf.image.adjust_hue(fake_image, hue)
 
 
 
